@@ -610,7 +610,7 @@ impl SupportedStreamConfigRange {
     /// - Max sample rate
     pub fn cmp_default_heuristics(&self, other: &Self) -> std::cmp::Ordering {
         use std::cmp::Ordering::Equal;
-        use SampleFormat::{F32, I16, U16};
+        use SampleFormat::{I32, F32, I16, U16};
 
         let cmp_stereo = (self.channels == 2).cmp(&(other.channels == 2));
         if cmp_stereo != Equal {
@@ -625,6 +625,11 @@ impl SupportedStreamConfigRange {
         let cmp_channels = self.channels.cmp(&other.channels);
         if cmp_channels != Equal {
             return cmp_channels;
+        }
+
+        let cmp_i32 = (self.sample_format == I32).cmp(&(other.sample_format == I32));
+        if cmp_i32 != Equal {
+            return cmp_i32;
         }
 
         let cmp_f32 = (self.sample_format == F32).cmp(&(other.sample_format == F32));

@@ -116,6 +116,11 @@ fn main() -> Result<(), anyhow::Error> {
             move |data, _: &_| write_input_data::<f32, f32>(data, &writer_2),
             err_fn,
         )?,
+        cpal::SampleFormat::I32 => device.build_input_stream(
+            &config.into(),
+            move |data, _: &_| write_input_data::<i32, i32>(data, &writer_2),
+            err_fn,
+        )?,
         cpal::SampleFormat::I16 => device.build_input_stream(
             &config.into(),
             move |data, _: &_| write_input_data::<i16, i16>(data, &writer_2),
@@ -142,6 +147,7 @@ fn sample_format(format: cpal::SampleFormat) -> hound::SampleFormat {
     match format {
         cpal::SampleFormat::U16 => hound::SampleFormat::Int,
         cpal::SampleFormat::I16 => hound::SampleFormat::Int,
+        cpal::SampleFormat::I32 => hound::SampleFormat::Int,
         cpal::SampleFormat::F32 => hound::SampleFormat::Float,
     }
 }

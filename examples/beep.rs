@@ -79,10 +79,11 @@ fn main() -> anyhow::Result<()> {
     .expect("failed to find output device");
     println!("Output device: {}", device.name()?);
 
-    let config = device.default_output_config().unwrap();
+    let config = device.supported_output_configs().unwrap().next().unwrap().with_max_sample_rate();
     println!("Default output config: {:?}", config);
 
     match config.sample_format() {
+        cpal::SampleFormat::I32 => run::<i32>(&device, &config.into()),
         cpal::SampleFormat::F32 => run::<f32>(&device, &config.into()),
         cpal::SampleFormat::I16 => run::<i16>(&device, &config.into()),
         cpal::SampleFormat::U16 => run::<u16>(&device, &config.into()),

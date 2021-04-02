@@ -978,12 +978,14 @@ fn set_hw_params_from_format<'a>(
         match sample_format {
             SampleFormat::I16 => alsa::pcm::Format::S16BE,
             SampleFormat::U16 => alsa::pcm::Format::U16BE,
+            SampleFormat::I32 => alsa::pcm::Format::S32BE,
             SampleFormat::F32 => alsa::pcm::Format::FloatBE,
         }
     } else {
         match sample_format {
             SampleFormat::I16 => alsa::pcm::Format::S16LE,
             SampleFormat::U16 => alsa::pcm::Format::U16LE,
+            SampleFormat::I32 => alsa::pcm::Format::S32LE,
             SampleFormat::F32 => alsa::pcm::Format::FloatLE,
         }
     };
