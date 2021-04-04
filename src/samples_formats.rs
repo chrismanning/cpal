@@ -40,7 +40,7 @@ pub unsafe trait Sample: Copy + Clone {
     fn to_u16(&self) -> u16;
 
     /// Converts any sample type to this one by calling `to_i16`, `to_u16`, `to_i32` or `to_f32`.
-    fn from<S>(&S) -> Self
+    fn from<S>(sample: &S) -> Self
     where
         S: Sample;
 }
@@ -124,11 +124,7 @@ unsafe impl Sample for i32 {
 
     #[inline]
     fn to_f32(&self) -> f32 {
-        if *self < 0 {
-            *self as f32 / -(::std::i32::MIN as f32)
-        } else {
-            *self as f32 / ::std::i32::MAX as f32
-        }
+        self.to_i16().to_f32()
     }
 
     fn to_i32(&self) -> i32 {
@@ -167,11 +163,7 @@ unsafe impl Sample for f32 {
     }
 
     fn to_i32(&self) -> i32 {
-        if *self >= 0.0 {
-            (*self * ::std::i32::MAX as f32) as i32
-        } else {
-            (-*self * ::std::i32::MIN as f32) as i32
-        }
+        self.to_i16().to_i32()
     }
 
     #[inline]
@@ -226,6 +218,14 @@ mod test {
     }
 
     #[test]
+    fn i16_to_i32() {
+        assert_eq!(0i16.to_i32(), 0);
+        assert_eq!((-16384i16).to_i32(), -16384);
+        assert_eq!(32767i16.to_i32(), 32767);
+        assert_eq!((-32768i16).to_i32(), -32768);
+    }
+
+    #[test]
     fn u16_to_i16() {
         assert_eq!(32768u16.to_i16(), 0);
         assert_eq!(16384u16.to_i16(), -16384);
@@ -268,5 +268,37 @@ mod test {
         assert_eq!(0.1f32.to_f32(), 0.1);
         assert_eq!((-0.7f32).to_f32(), -0.7);
         assert_eq!(1.0f32.to_f32(), 1.0);
+    }
+
+    #[test]
+    fn i32_to_i16() {
+        assert_eq!(0i32.to_i16(), 0);
+        assert_eq!((-467i32).to_i16(), -467);
+        assert_eq!(32767i32.to_i16(), 32767);
+        assert_eq!((-32768i32).to_i16(), -32768);
+    }
+
+    #[test]
+    fn i32_to_u16() {
+        assert_eq!(0i32.to_u16(), 32768);
+        assert_eq!((-16384i32).to_u16(), 16384);
+        assert_eq!(32767i32.to_u16(), 65535);
+        assert_eq!((-32768i32).to_u16(), 0);
+    }
+
+    #[test]
+    fn i32_to_f32() {
+        assert_eq!(0i32.to_f32(), 0.0);
+        assert_eq!((-16384i32).to_f32(), -0.5);
+        assert_eq!(32767i32.to_f32(), 1.0);
+        assert_eq!((-32768i32).to_f32(), -1.0);
+    }
+
+    #[test]
+    fn i32_to_i32() {
+        assert_eq!(0i32.to_i32(), 0);
+        assert_eq!((-32768i32).to_i32(), -32768);
+        assert_eq!(65536i32.to_i32(), 65536);
+        assert_eq!((-65536i32).to_i32(), -65536);
     }
 }
