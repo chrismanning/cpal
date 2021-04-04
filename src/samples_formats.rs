@@ -120,7 +120,7 @@ unsafe impl Sample for i16 {
 }
 
 unsafe impl Sample for i32 {
-    const FORMAT: SampleFormat = SampleFormat::I16;
+    const FORMAT: SampleFormat = SampleFormat::I32;
 
     #[inline]
     fn to_f32(&self) -> f32 {
